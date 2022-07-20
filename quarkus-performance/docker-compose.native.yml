@@ -1,0 +1,25 @@
+version: '3.1'
+services:
+  quarkus-performance-db:
+    image: mariadb
+    environment:
+      - MARIADB_ROOT_PASSWORD=root
+      - MARIADB_USER=quarkus
+      - MARIADB_PASSWORD=quarkus
+      - MARIADB_DATABASE=quarkus
+    healthcheck:
+      test: ["CMD", "mysql" ,"quarkus", "--user=quarkus", "--password=quarkus", "--silent", "--execute 'select 1;'"]
+      timeout: 20s
+      retries: 10
+
+  quarkus-native:
+    image: quarkus-performance-native
+    ports:
+      - "8080:8080"
+    depends_on:
+      - quarkus-performance-db
+    environment:
+      - DATASOURCE_URL=jdbc:mariadb://quarkus-performance-db:3306/quarkus
+      - DATASOURCE_USER=quarkus
+      - DATASOURCE_PASSWORD=quarkus
+

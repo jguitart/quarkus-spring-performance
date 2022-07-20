@@ -1,0 +1,25 @@
+version: '3.1'
+services:
+  spring-performance-db:
+    image: mariadb
+    environment:
+      - MARIADB_ROOT_PASSWORD=root
+      - MARIADB_USER=spring
+      - MARIADB_PASSWORD=spring
+      - MARIADB_DATABASE=spring
+    healthcheck:
+      test: ["CMD", "mysqladmin" ,"ping", "-h", "localhost"]
+      timeout: 20s
+      retries: 10
+
+  spring-native:
+    image: spring-performance-native
+    ports:
+      - "8080:8080"
+    depends_on:
+      - spring-performance-db
+    environment:
+      - DATASOURCE_URL=jdbc:mariadb://spring-performance-db:3306/spring
+      - DATASOURCE_USER=spring
+      - DATASOURCE_PASSWORD=spring
+
